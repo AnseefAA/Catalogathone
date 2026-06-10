@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presidio Enterprise - IBM Sovereign Core</title>
+    
+    <!-- IBM Plex Font -->
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            background-color: #f4f4f4;
+            color: #161616;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background-color: #161616;
+            color: #f4f4f4;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #393939;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .page-title {
+            margin-bottom: 2rem;
+        }
+        
+        .page-title h2 {
+            font-size: 32px;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-title p {
+            color: #525252;
+            font-size: 14px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 4px 4px 0 0;
+        }
+        
+        .tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #525252;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+        
+        .tab:hover {
+            color: #161616;
+            background: #f4f4f4;
+        }
+        
+        .tab.active {
+            color: #0f62fe;
+            border-bottom-color: #0f62fe;
+            background: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card h3 {
+            font-size: 20px;
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 14px;
+            font-weight: 500;
+            color: #161616;
+        }
+        
+        textarea, select, input[type="file"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #8d8d8d;
+            border-radius: 0;
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 14px;
+            background: #ffffff;
+            transition: border-color 0.2s, outline 0.2s;
+        }
+        
+        textarea {
+            min-height: 200px;
+            resize: vertical;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+        
+        textarea:focus, select:focus, input:focus {
+            outline: 2px solid #0f62fe;
+            outline-offset: -2px;
+            border-color: #0f62fe;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 0.875rem 1.5rem;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-family: 'IBM Plex Sans', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-primary {
+            background: #0f62fe;
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: #0353e9;
+        }
+        
+        .btn-secondary {
+            background: #393939;
+            color: white;
+        }
+        
+        .btn-secondary:hover:not(:disabled) {
+            background: #4c4c4c;
+        }
+        
+        .btn-tertiary {
+            background: transparent;
+            color: #0f62fe;
+            border: 1px solid #0f62fe;
+        }
+        
+        .btn-tertiary:hover:not(:disabled) {
+            background: #e8f4ff;
+        }
+        
+        .result-box {
+            background: #f4f4f4;
+            border: 1px solid #e0e0e0;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: 4px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            color: #525252;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        .spinner {
+            border: 3px solid #e0e0e0;
+            border-top: 3px solid #0f62fe;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: #f4f4f4;
+            padding: 1.5rem;
+            border-left: 4px solid #0f62fe;
+            border-radius: 4px;
+        }
+        
+        .stat-card h4 {
+            font-size: 14px;
+            font-weight: 500;
+            color: #525252;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: 300;
+            color: #161616;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        th, td {
+            text-align: left;
+            padding: 0.75rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        th {
+            background: #f4f4f4;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #525252;
+        }
+        
+        td {
+            font-size: 14px;
+        }
+        
+        tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: 2px;
+        }
+        
+        .badge-info {
+            background: #d0e2ff;
+            color: #0043ce;
+        }
+        
+        .badge-success {
+            background: #defbe6;
+            color: #0e6027;
+        }
+        
+        .badge-warning {
+            background: #fcf4d6;
+            color: #8e6a00;
+        }
+        
+        .error-message {
+            background: #fff1f1;
+            border-left: 4px solid #da1e28;
+            padding: 1rem;
+            margin-top: 1rem;
+            color: #750e13;
+            border-radius: 4px;
+        }
+        
+        .success-message {
+            background: #defbe6;
+            border-left: 4px solid #24a148;
+            padding: 1rem;
+            margin-top: 1rem;
+            color: #0e6027;
+            border-radius: 4px;
+        }
+        
+        .info-message {
+            background: #d0e2ff;
+            border-left: 4px solid #0f62fe;
+            padding: 1rem;
+            margin-top: 1rem;
+            color: #0043ce;
+            border-radius: 4px;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+        
+        .file-upload-area {
+            border: 2px dashed #8d8d8d;
+            padding: 2rem;
+            text-align: center;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .file-upload-area:hover {
+            border-color: #0f62fe;
+            background: #f4f4f4;
+        }
+        
+        .file-upload-area.dragover {
+            border-color: #0f62fe;
+            background: #e8f4ff;
+        }
+        
+        .entity-highlight {
+            background: #fcf4d6;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔒 IBM Sovereign Core - Presidio Enterprise</h1>
+    </div>
+
+    <div class="container">
+        <div class="page-title">
+            <h2>PII Detection & Data Protection Platform</h2>
+            <p>Enterprise-grade PII detection and anonymization for sovereign cloud environments</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('analyzer')">🔍 PII Analyzer</button>
+            <button class="tab" onclick="showTab('anonymizer')">🛡️ Anonymizer</button>
+            <button class="tab" onclick="showTab('audit')">📊 Audit Logs</button>
+        </div>
+
+        <!-- Analyzer Tab -->
+        <div id="analyzer-tab" class="tab-content active">
+            <div class="card">
+                <h3>PII Detection & Analysis</h3>
+                <p style="color: #525252; margin-bottom: 1.5rem;">Detect sensitive information in text using NLP and pattern recognition</p>
+                
+                <div class="form-group">
+                    <label>Text to Analyze</label>
+                    <textarea id="analyzeText" placeholder="Enter or paste text here...&#10;&#10;Example: My name is John Doe, email john@example.com, phone 555-1234"></textarea>
+                </div>
+                
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Language</label>
+                        <select id="analyzeLanguage">
+                            <option value="en">English</option>
+                            <option value="es">Spanish</option>
+                            <option value="fr">French</option>
+                            <option value="de">German</option>
+                            <option value="it">Italian</option>
+                            <option value="pt">Portuguese</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Confidence Threshold: <span id="thresholdValue">0.5</span></label>
+                        <input type="range" id="analyzeThreshold" min="0" max="1" step="0.1" value="0.5" 
+                               oninput="document.getElementById('thresholdValue').textContent = this.value"
+                               style="width: 100%; padding: 0.5rem;">
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn-primary" onclick="analyzeText()">
+                        🔍 Analyze Text
+                    </button>
+                    <button class="btn-secondary" onclick="clearAnalyze()">
+                        Clear
+                    </button>
+                </div>
+                
+                <div id="analyzeLoading" class="loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing text...</p>
+                </div>
+                
+                <div id="analyzeResult"></div>
+            </div>
+        </div>
+
+        <!-- Anonymizer Tab -->
+        <div id="anonymizer-tab" class="tab-content">
+            <div class="card">
+                <h3>Data Anonymization</h3>
+                <p style="color: #525252; margin-bottom: 1.5rem;">Protect sensitive information with multiple anonymization strategies</p>
+                
+                <div class="form-group">
+                    <label>Text to Anonymize</label>
+                    <textarea id="anonymizeText" placeholder="Enter text containing PII...&#10;&#10;Example: Contact Alice Johnson at alice@company.com or call (555) 123-4567"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Anonymization Strategy</label>
+                    <select id="anonymizeStrategy">
+                        <option value="replace">Replace with <ENTITY_TYPE></option>
+                        <option value="mask">Mask with asterisks (****)</option>
+                        <option value="redact">Remove completely</option>
+                        <option value="hash">Hash (SHA-256)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Or Upload File</label>
+                    <div class="file-upload-area" onclick="document.getElementById('fileInput').click()">
+                        <p>📁 Click to upload or drag & drop a file</p>
+                        <p style="font-size: 12px; color: #525252; margin-top: 0.5rem;">Supported: .txt, .csv, .json</p>
+                    </div>
+                    <input type="file" id="fileInput" style="display: none;" accept=".txt,.csv,.json" onchange="handleFileSelect(event)">
+                    <div id="fileInfo" style="margin-top: 0.5rem; font-size: 14px; color: #525252;"></div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn-primary" onclick="processText()">
+                        🛡️ Process & Anonymize
+                    </button>
+                    <button class="btn-secondary" onclick="clearAnonymize()">
+                        Clear
+                    </button>
+                </div>
+                
+                <div id="anonymizeLoading" class="loading">
+                    <div class="spinner"></div>
+                    <p>Processing...</p>
+                </div>
+                
+                <div id="anonymizeResult"></div>
+            </div>
+        </div>
+
+        <!-- Audit Logs Tab -->
+        <div id="audit-tab" class="tab-content">
+            <div class="card">
+                <h3>Audit Trail & Compliance</h3>
+                <p style="color: #525252; margin-bottom: 1.5rem;">Monitor all PII operations for compliance and security</p>
+                
+                <div id="auditStats" class="stats-grid"></div>
+                
+                <button class="btn-primary" onclick="loadAuditLogs()">
+                    🔄 Refresh Logs
+                </button>
+                
+                <div id="auditLoading" class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading audit logs...</p>
+                </div>
+                
+                <div id="auditResult"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedFile = null;
+        
+        // Tab switching
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+            
+            // Load audit logs when audit tab is opened
+            if (tabName === 'audit') {
+                loadAuditLogs();
+            }
+        }
+        
+        // File handling
+        function handleFileSelect(event) {
+            selectedFile = event.target.files[0];
+            if (selectedFile) {
+                document.getElementById('fileInfo').innerHTML = 
+                    `<strong>Selected:</strong> ${selectedFile.name} (${(selectedFile.size / 1024).toFixed(2)} KB)`;
+            }
+        }
+        
+        // Drag and drop
+        const uploadArea = document.querySelector('.file-upload-area');
+        if (uploadArea) {
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    selectedFile = files[0];
+                    document.getElementById('fileInfo').innerHTML = 
+                        `<strong>Selected:</strong> ${selectedFile.name} (${(selectedFile.size / 1024).toFixed(2)} KB)`;
+                }
+            });
+        }
+        
+        // Analyze Text
+        async function analyzeText() {
+            const text = document.getElementById('analyzeText').value;
+            if (!text.trim()) {
+                showError('analyzeResult', 'Please enter some text to analyze');
+                return;
+            }
+            
+            const language = document.getElementById('analyzeLanguage').value;
+            const threshold = parseFloat(document.getElementById('analyzeThreshold').value);
+            
+            document.getElementById('analyzeLoading').classList.add('active');
+            document.getElementById('analyzeResult').innerHTML = '';
+            
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        text: text,
+                        language: language,
+                        score_threshold: threshold
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                displayAnalyzeResults(data, text);
+                
+            } catch (error) {
+                showError('analyzeResult', error.message);
+            } finally {
+                document.getElementById('analyzeLoading').classList.remove('active');
+            }
+        }
+        
+        // Display analyze results
+        function displayAnalyzeResults(data, originalText) {
+            if (data.length === 0) {
+                document.getElementById('analyzeResult').innerHTML = 
+                    '<div class="success-message">✅ No PII entities detected in the text.</div>';
+                return;
+            }
+            
+            let html = '<div class="info-message">Found ' + data.length + ' PII entities</div>';
+            html += '<table><thead><tr><th>Entity Type</th><th>Position</th><th>Confidence</th><th>Text</th></tr></thead><tbody>';
+            
+            data.forEach(entity => {
+                const entityText = originalText.substring(entity.start, entity.end);
+                html += `<tr>
+                    <td><span class="badge badge-info">${entity.entity_type}</span></td>
+                    <td>${entity.start}-${entity.end}</td>
+                    <td>${(entity.score * 100).toFixed(0)}%</td>
+                    <td><span class="entity-highlight">${escapeHtml(entityText)}</span></td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table>';
+            document.getElementById('analyzeResult').innerHTML = html;
+        }
+        
+        // Process Text (Anonymize)
+        async function processText() {
+            const text = document.getElementById('anonymizeText').value;
+            const strategy = document.getElementById('anonymizeStrategy').value;
+            
+            if (!text.trim() && !selectedFile) {
+                showError('anonymizeResult', 'Please enter text or upload a file');
+                return;
+            }
+            
+            document.getElementById('anonymizeLoading').classList.add('active');
+            document.getElementById('anonymizeResult').innerHTML = '';
+            
+            try {
+                let response;
+                
+                if (selectedFile) {
+                    // Process file
+                    const formData = new FormData();
+                    formData.append('file', selectedFile);
+                    formData.append('anonymization_strategy', strategy);
+                    formData.append('language', 'en');
+                    
+                    response = await fetch('/api/anonymizer/process/file', {
+                        method: 'POST',
+                        body: formData
+                    });
+                } else {
+                    // Process text
+                    response = await fetch('/api/process', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            text: text,
+                            language: 'en',
+                            anonymization_strategy: strategy
+                        })
+                    });
+                }
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                displayAnonymizeResults(data);
+                
+            } catch (error) {
+                showError('anonymizeResult', error.message);
+            } finally {
+                document.getElementById('anonymizeLoading').classList.remove('active');
+            }
+        }
+        
+        // Display anonymize results
+        function displayAnonymizeResults(data) {
+            let html = '<div class="success-message">✅ Processing completed successfully!</div>';
+            html += '<div style="margin-top: 1.5rem;"><strong>Entities Found:</strong> <span class="badge badge-info">' + data.entities_detected.length + '</span></div>';
+            html += '<div style="margin-top: 1rem;"><strong>Original Text:</strong></div>';
+            html += '<div class="result-box">' + escapeHtml(data.original_text) + '</div>';
+            html += '<div style="margin-top: 1rem;"><strong>Anonymized Text:</strong></div>';
+            html += '<div class="result-box">' + escapeHtml(data.anonymized_text) + '</div>';
+            
+            if (data.entities_detected.length > 0) {
+                html += '<div style="margin-top: 1rem;"><strong>Detected Entities:</strong></div>';
+                html += '<table><thead><tr><th>Type</th><th>Position</th><th>Confidence</th></tr></thead><tbody>';
+                data.entities_detected.forEach(entity => {
+                    html += `<tr>
+                        <td><span class="badge badge-info">${entity.entity_type}</span></td>
+                        <td>${entity.start}-${entity.end}</td>
+                        <td>${(entity.score * 100).toFixed(0)}%</td>
+                    </tr>`;
+                });
+                html += '</tbody></table>';
+            }
+            
+            document.getElementById('anonymizeResult').innerHTML = html;
+        }
+        
+        // Load Audit Logs
+        async function loadAuditLogs() {
+            document.getElementById('auditLoading').classList.add('active');
+            document.getElementById('auditResult').innerHTML = '';
+            document.getElementById('auditStats').innerHTML = '';
+            
+            try {
+                // Load stats
+                const statsResponse = await fetch('/api/audit/stats');
+                if (!statsResponse.ok) {
+                    throw new Error(`HTTP error! status: ${statsResponse.status}`);
+                }
+                const stats = await statsResponse.json();
+                
+                let statsHtml = `
+                    <div class="stat-card">
+                        <h4>Analyzer Operations</h4>
+                        <div class="value">${stats.analyzer.total_operations || 0}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Anonymizer Operations</h4>
+                        <div class="value">${stats.anonymizer.total_operations || 0}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Entities Detected</h4>
+                        <div class="value">${stats.analyzer.total_entities_found || 0}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Entities Anonymized</h4>
+                        <div class="value">${stats.anonymizer.total_entities_anonymized || 0}</div>
+                    </div>
+                `;
+                
+                document.getElementById('auditStats').innerHTML = statsHtml;
+                
+                // Load recent logs
+                const analyzerResponse = await fetch('/api/audit/analyzer?limit=50');
+                const anonymizerResponse = await fetch('/api/audit/anonymizer?limit=50');
+                
+                if (!analyzerResponse.ok || !anonymizerResponse.ok) {
+                    throw new Error('Failed to load audit logs');
+                }
+                
+                const analyzerData = await analyzerResponse.json();
+                const anonymizerData = await anonymizerResponse.json();
+                
+                // Combine and sort by timestamp
+                const allLogs = [...analyzerData, ...anonymizerData].sort((a, b) => 
+                    new Date(b.timestamp) - new Date(a.timestamp)
+                );
+                
+                if (allLogs.length === 0) {
+                    document.getElementById('auditResult').innerHTML = 
+                        '<div class="info-message">No audit logs available yet. Process some text to see logs here.</div>';
+                } else {
+                    let tableHtml = '<table><thead><tr><th>Timestamp</th><th>Service</th><th>Action</th><th>Entities</th><th>Details</th></tr></thead><tbody>';
+                    
+                    allLogs.slice(0, 50).forEach(log => {
+                        const date = new Date(log.timestamp);
+                        const details = log.service === 'analyzer' 
+                            ? Object.entries(log.entity_types || {}).map(([k,v]) => `${k}:${v}`).join(', ')
+                            : Object.entries(log.anonymization_methods || {}).map(([k,v]) => `${k}:${v}`).join(', ');
+                        
+                        tableHtml += `<tr>
+                            <td>${date.toLocaleString()}</td>
+                            <td><span class="badge ${log.service === 'analyzer' ? 'badge-info' : 'badge-success'}">${log.service}</span></td>
+                            <td>${log.action}</td>
+                            <td>${log.entities_found || log.entities_anonymized || 0}</td>
+                            <td style="font-size: 12px;">${details || 'N/A'}</td>
+                        </tr>`;
+                    });
+                    
+                    tableHtml += '</tbody></table>';
+                    document.getElementById('auditResult').innerHTML = tableHtml;
+                }
+                
+            } catch (error) {
+                showError('auditResult', error.message);
+            } finally {
+                document.getElementById('auditLoading').classList.remove('active');
+            }
+        }
+        
+        // Clear functions
+        function clearAnalyze() {
+            document.getElementById('analyzeText').value = '';
+            document.getElementById('analyzeResult').innerHTML = '';
+        }
+        
+        function clearAnonymize() {
+            document.getElementById('anonymizeText').value = '';
+            document.getElementById('anonymizeResult').innerHTML = '';
+            document.getElementById('fileInfo').innerHTML = '';
+            document.getElementById('fileInput').value = '';
+            selectedFile = null;
+        }
+        
+        // Utility functions
+        function showError(elementId, message) {
+            document.getElementById(elementId).innerHTML = 
+                '<div class="error-message"><strong>Error:</strong> ' + escapeHtml(message) + '</div>';
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
